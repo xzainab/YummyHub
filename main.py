@@ -1,11 +1,10 @@
 def display_menu():
     """Display the main menu options"""
-    
     print('\n=== DIGITAL RECIPE BOOK ===')
     print('1. Add a new recipe')
-    print('2. Search fo a recipe')
+    print('2. Search for a recipe')      
     print('3. View all recipes')
-    print('4. generate a random recipe')
+    print('4. Generate a random recipe')  
     print('5. Exit')
     return input('Enter your choice (1-5): ')
 
@@ -31,4 +30,5 @@ def main():
             print("Thank you for using DIGITAL RECIPE BOOK. Goodbye!")
             break
         else:
-            print("Invalid choice. Please enter a number between 1 and 5.")
+            print("Invalid choice. Please enter a number between 1 and 5.") 
+
