@@ -1,9 +1,9 @@
 import pandas as pd
 import os
 import uuid
-from datetime import date, datetime, timedelta
+from datetime import timedelta
 
-def new_recipe(data, filename):
+def add_new_recipe(data, filename):
      """Adding a new recipe into the recipe csv file
         Done by Zainab Abdulwahab 
      """
@@ -58,3 +58,9 @@ def new_recipe(data, filename):
 
 
     # preparing time 
+    while True:
+        try:    
+           minutes = int(input('Enter preparation time in minutes: '))
+           prep_duration = timedelta(minutes=minutes)
+        except ValueError:
+           print('Invalid input! Please enter a valid number of minutes (e.g., 20).')

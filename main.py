@@ -1,5 +1,8 @@
 def display_menu():
-    """Display the main menu options"""
+    """
+       Display the main menu options
+       Done by Zainab Abdulwahab
+    """
     print('\n=== DIGITAL RECIPE BOOK ===')
     print('1. Add a new recipe')
     print('2. Search for a recipe')      
