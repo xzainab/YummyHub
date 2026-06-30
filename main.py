@@ -5,7 +5,7 @@ def display_menu():
     """
     print('\n=== DIGITAL RECIPE BOOK ===')
     print('1. Add a new recipe')
-    print('2. Search for a recipe')      
+    print('2. Search for a recipe by ingredient')
     print('3. View all recipes')
     print('4. Generate a random recipe')  
     print('5. Exit')
@@ -13,7 +13,10 @@ def display_menu():
 
 
 def main():
-    """Main application function"""
+    """
+       Main application function
+       Done by Zainab Abdulwahab
+    """
     print('WELCOME TO THE DIGITAL RECIPE BOOK')
     print('This application helps you easily store, retrieve, and')
     print('manage your favorite cooking recipes all in one place.')
