@@ -23,6 +23,97 @@ def recipes_categorize():
         else:
             print("Invalid Input! Please enter a valid category: Breakfast, Lunch, Dinner, or Dessert.")
 
+# Mandatory 3 - rating recipes
+def rate_recipe():
+    """ 
+       To allow users to rate a recipe using float values.
+       Done by Malak Mahdi
+    """
+    df, size = load_recipes()
+    if size == 0:
+        print("\nThere are no recipes available to rate!")
+        return 0.0
+
+    recipe_name = input("\nEnter the name of the recipe you want to rate: ").strip().lower()
+    
+    # Check if the recipe exists
+    match = df[df['name'].str.lower() == recipe_name]
+    if match.empty:
+        print(f"Recipe '{recipe_name}' not found.")
+        return 0.0
+
+    # Get the exact row index and extract the existing rating safely as a float
+    idx = match.index[0] 
+    old_rating = float(df.at[idx, 'rating'])
+
+    while True:
+        try:
+            new_rating = float(input("Enter your rating (1 to 5 stars, e.g., 4.5): "))
+            if 1.0 <= new_rating <= 5.0:
+                break
+            print("Rating must be between 1.0 and 5.0.")
+        except ValueError:
+            print("Invalid input! Please enter a valid decimal number.")
+
+    # Calculate the average if a previous rating exists
+    if old_rating > 0.0:
+        final_rating = (old_rating + new_rating) / 2.0
+        print(f"Old rating was {old_rating:.1f}. New calculated average is {final_rating:.1f}")
+    else:
+        final_rating = float(new_rating)
+        print(f"First rating recorded for this recipe!")
+
+    # Round the final result to 1 decimal place
+    saved_rating = float(round(final_rating, 1))
+
+    df.at[idx, 'rating'] = saved_rating
+    df.to_csv(FILE_NAME, index=False)
+    print(f"Success! '{df.at[idx, 'name']}' is now rated {saved_rating}/5 stars.")
+    
+    return saved_rating
+
+# Mandatory 4 - shopping list
+def shopping_list():
+    """
+       Creat a shopping list depending on the selected recipes
+       Done by Kawthar Hussain
+    """
+    shopping_list = []
+    allRecipes = pd.read_csv("recipes.csv")
+
+    print("\nPlease enter each recipe below, then type 'done' when finished to print the shopping list:")
+
+    while True:
+        recipe_name = input("Enter recipe name (or type 'done') to print the shopping list: ").strip()
+
+        if recipe_name.lower() == 'done':
+            break
+
+        finding_recipe = allRecipes[allRecipes['name'] == recipe_name]
+
+        if finding_recipe.empty:
+            print(f"\n {recipe_name} not found.")
+            continue
+
+        ingredients = finding_recipe.iloc[0]['ingredients'].split(";")
+
+        for item in ingredients:
+            item = item.strip()
+
+            if item not in shopping_list:
+                shopping_list.append(item)
+
+        print("\nItems added to the shopping list.")
+
+    if len(shopping_list) == 0:
+        print("\n----- SHOPPING LIST IS EMPTY -----")
+    else:
+        print("\n========== SHOPPING LIST ==========")
+
+        for item in shopping_list:
+            print("-", item)
+
+
 def add_new_recipe():
     """
        Adding a new recipe into the recipe csv file
@@ -94,7 +185,8 @@ def add_new_recipe():
         "preparing time": [prep_duration],
         "instructions": [instructions_str],
         "difficulty level": [level],
-        "category": [category_val]
+        "category": [category_val],
+        "rating": 0
     }
 
     dataframe = pd.DataFrame(new_recipe)
@@ -122,21 +214,21 @@ def search_by_ingredients():
     
     # Check if any matches were found
     if not matched_recipes.empty:
-        print("\n--- FOUND RECIPES ---")
+        print("\n=== FOUND RECIPES ===")
         # Display specific columns cleanly without the dataframe index
         print(matched_recipes[['name', 'preparing time', 'difficulty level']].to_string(index=False))
     else:
         print("\nNo available recipes found with the mentioned ingredient.")
 
-    print("\nALL RECIPES:")
-    for index, row in df.iterrows():
-        print(f"Name: {row['name']} - Preping Time: {row['preparing time']} mins - Difficulty level: {row['difficulty level']}")
-
 
 def load_recipes():
-    """Helper function to safely load recipes and get current size"""
+    """Helper function to safely load recipes, ensure columns exist, and match data types"""
     if os.path.exists(FILE_NAME):
         df = pd.read_csv(FILE_NAME)
+        if 'rating' not in df.columns:
+            df['rating'] = 0.0
+            
+        df['rating'] = df['rating'].astype(float)
         return df, df.shape[0]
     return pd.DataFrame(), 0
 
@@ -145,26 +237,37 @@ def view_all_recipes():
        Display all recipes with their name and preparation time
        Done by Kawthar Hussain
     """
-    allRecipes, size = load_recipes()
-    if size == 0:
-        print("\n-----THERE ARE NO RECIPES----")
-    else:
-        print("\n-----ALL RECIPES----")
-        allRecipes[["name", "preparing time"]]
+    try:
+        allRecipes = pd.read_csv("recipes.csv")
+        size = allRecipes.shape[0]
+
+        if size == 0:
+            print("\n-----THERE IS NO RECIPES----")
+        else:
+            print("\n-----ALL RECIPES----")
+            print(allRecipes[["name", "preparing time"]])
+
+    except FileNotFoundError:
+        print("\n-----ERROR: recipes.csv FILE NOT FOUND----")
+
 
 def random_recipe():
     """
-       Randomly select and display a complete recipe
+       randomly select and display a complete recipe
        Done by Kawthar Hussain
     """
-    allRecipes, size = load_recipes()
-    if size == 0:
-        print("\n-----THERE ARE NO RECIPES----")
-    else:
-        num = randint(0, size - 1)
-        print("\n=== RANDOM RECIPE ===")
-        allRecipes.iloc[[num]]
+    try:
+        allRecipes = pd.read_csv("recipes.csv")
+        size = allRecipes.shape[0]
 
+        if size == 0:
+            print("\n-----THERE IS NO RECIPES----")
+        else:
+            num = randint(0, size - 1)
+            print(allRecipes.iloc[[num]])
+
+    except FileNotFoundError:
+        print("\n-----ERROR: recipes.csv FILE NOT FOUND----")
 
 def display_menu():
     """
@@ -177,8 +280,9 @@ def display_menu():
     print("3. View all recipes")
     print("4. Generate a random recipe")
     print("5. Rating recipes")
-    print("6. Exit")
-    return input("Enter your choice (1-6): ")
+    print("6. Create a shopping list")
+    print("7. Exit")
+    return input("Enter your choice (1-7): ")
 
 def main():
     """
@@ -202,8 +306,10 @@ def main():
         elif choice == "5":
             rate_recipe()
         elif choice == "6":
+            shopping_list()
+        elif choice == "7":
             print("Thank you for using DIGITAL RECIPE BOOK. Goodbye!")
             break
         else:
-            print("Invalid choice. Please enter a number between 1 and 5.")
+            print("Invalid choice. Please enter a number between 1 and 7.")
 
