@@ -1,5 +1,7 @@
 id,name,ingredients,preparing time,instructions,difficulty level,category,rating
-6aa5d9,egg sandwich,egg; tost; cheese; salt; black pepper,10,break the egg into the ban; add salt on the egg; add cheese on the tost; add the egg on the tost,Easy,Breakfast,0.0
-3c2851,pasta,pasta; water; milk; cheese; tomato paste; oil; salt; broccoli; carrot,30,boil the pasta on the water; in another pan mix the other ingredients together; add the pasta on the mixture,Medium,Dinner,0.0
+6aa5d9,egg sandwich,egg; tost; cheese; salt; black pepper,10,break the egg into the ban; add salt on the egg; add cheese on the tost; add the egg on the tost,Easy,Breakfast,2.5
+3c2851,pasta,pasta; water; milk; cheese; tomato paste; oil; salt; broccoli; carrot,30,boil the pasta on the water; in another pan mix the other ingredients together; add the pasta on the mixture,Medium,Dinner,4.0
 5b0334,machboose,rise; chicken; spices; potato,75,boil chicken with water and spices; boil the rise in the water; mix everything,Hard,Lunch,5.0
 5e292e,chia seed boding,chia seeds; milk; mango; yogurt; blueberry; nuts; rose water; saffron,120,add chia seed to milk and yogurt; cut the fruits; crush nuts; add the rose water and saffron to the milk; mix everything and keep in the fridge min 120 min,Easy,Dessert,0.0
+02621a,cesser salad,lettuce; Parmesan cheese; Caesar dressing; Grilled chicken,20,Wash and chop the lettuce; add parmesan; Pour in the Caesar dressing; toss well; Top with grilled chicken,Easy,Dinner,0.0
+1cca8b,Pancakes,flour; egg; milk; sugar; baking powder; oil; syrup,20,mix all ingredients; Heat a lightly greased pan; pour the batter into the pan; cook until bubbles appear then flip; serve with syrup,Medium,Dessert,0.0
