@@ -2,11 +2,16 @@ import pandas as pd
 import os
 import uuid
 from random import randint
+import streamlit as sl
 
 FILE_NAME = "recipes.csv"
 
+# Mandatory 1 - categorize recipes
 def recipes_categorize():
-    """Categorizes a given recipe into Breakfast, Lunch, Dinner, or Dessert."""
+    """
+       Categorizes a given recipe into Breakfast, Lunch, Dinner, or Dessert.
+       Done by Zainab Abdulwahab
+    """
     categorize = ["breakfast", "lunch", "dinner", "dessert"]
     print("\nCategorize options: Breakfast, Lunch, Dinner, Dessert")
     while True:
@@ -19,7 +24,10 @@ def recipes_categorize():
             print("Invalid Input! Please enter a valid category: Breakfast, Lunch, Dinner, or Dessert.")
 
 def add_new_recipe():
-    """Adding a new recipe into the recipe csv file"""
+    """
+       Adding a new recipe into the recipe csv file
+       Done by Zainab Abdulwahab
+    """
     print("\n=== Add a New Recipe ===")
     recipe_id = str(uuid.uuid4())[:6]
     recipe_name = input("Enter recipe name: ").strip()
@@ -99,6 +107,32 @@ def add_new_recipe():
         dataframe.to_csv(FILE_NAME, mode="w", header=True, index=False)
         print(f"\nFile {FILE_NAME} has been successfully created with your first recipe!")
 
+def search_by_ingredients():
+    """
+    Search for recipes by a specific ingredient.
+    Done by Malak Mahdi
+    """
+    # Load the recipes dataframe
+    df = load_recipes()[0]
+    
+    search_ingredient = input("Enter an ingredient to search recipes: ").lower().strip()
+    
+    # Filter the dataframe safely by checking if the ingredient string contains the input
+    matched_recipes = df[df['ingredients'].str.lower().str.contains(search_ingredient, na=False)]
+    
+    # Check if any matches were found
+    if not matched_recipes.empty:
+        print("\n--- FOUND RECIPES ---")
+        # Display specific columns cleanly without the dataframe index
+        print(matched_recipes[['name', 'preparing time', 'difficulty level']].to_string(index=False))
+    else:
+        print("\nNo available recipes found with the mentioned ingredient.")
+
+    print("\nALL RECIPES:")
+    for index, row in df.iterrows():
+        print(f"Name: {row['name']} - Preping Time: {row['preparing time']} mins - Difficulty level: {row['difficulty level']}")
+
+
 def load_recipes():
     """Helper function to safely load recipes and get current size"""
     if os.path.exists(FILE_NAME):
@@ -142,8 +176,9 @@ def display_menu():
     print("2. Search for a recipe by ingredient")
     print("3. View all recipes")
     print("4. Generate a random recipe")
-    print("5. Exit")
-    return input("Enter your choice (1-5): ")
+    print("5. Rating recipes")
+    print("6. Exit")
+    return input("Enter your choice (1-6): ")
 
 def main():
     """
@@ -159,12 +194,14 @@ def main():
         if choice == "1":
             add_new_recipe()
         elif choice == "2":
-            search_for_recipe()
+            search_by_ingredients()
         elif choice == "3":
             view_all_recipes()
         elif choice == "4":
             random_recipe()
         elif choice == "5":
+            rate_recipe()
+        elif choice == "6":
             print("Thank you for using DIGITAL RECIPE BOOK. Goodbye!")
             break
         else:

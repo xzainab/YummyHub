@@ -31,7 +31,9 @@ def display_recipes(recipe):
 """ Stretch Goal: The program allows users to rate recipes and sort by rating."""
 
 def rate_recipe(recipe):
-    """ To allow users to rate a recipe.
+    """ 
+       To allow users to rate a recipe.
+       Done by Malak Mahdi
     """
     recipe_to_rate= input("Enter a recipe you'd like to rate: ").lower()
     found == False
