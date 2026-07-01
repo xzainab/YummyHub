@@ -74,6 +74,24 @@ def add_new_recipe():
         else:
             print('Invalid Input! Please enter a valid Difficulty: Easy, Medium, or Hard.')
 
+
+    # Mandatory 1 - Recipe Category
+    def recipes_categorize():
+    """
+     Categorizes a given recipe into Breakfast, Lunch, Dinner, or Dessert.
+     Done by Zainab Abdulwahab
+    """
+    categorize = ['Breakfast', 'Lunch', 'Dinner', 'Dessert']
+    print('\n categorize options: Breakfast, Lunch, Dinner, Dessert)
+    while True:
+        recipe_categorize = input("Enter recipe categorize: ").strip().lower()
+        if recipe_categorize in categorize:
+            recipe_categorize = recipe_categorize.capitalize() 
+            break 
+        else:
+            print('Invalid Input! Please enter a valid categorize: Breakfast, Lunch, Dinner or Dessert.')
+    
+
     # Create a new recipe dictionary
     new_recipe = {
         'id': [recipe_id],
@@ -81,7 +99,8 @@ def add_new_recipe():
         'ingredients': [ingredients_str],
         'preparing time': [prep_duration],
         'instructions': [instructions_str],
-        'difficulty level': [level]
+        'difficulty level': [level],
+        'category': [recipe_categorize]
     }
 
     # Convert the dictionary into a DataFrame
