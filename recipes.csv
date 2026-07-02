@@ -4,4 +4,7 @@ id,name,ingredients,preparing time,instructions,difficulty level,category,rating
 5b0334,machboose,rise; chicken; spices; potato,75,boil chicken with water and spices; boil the rise in the water; mix everything,Hard,Lunch,5.0
 5e292e,chia seed boding,chia seeds; milk; mango; yogurt; blueberry; nuts; rose water; saffron,120,add chia seed to milk and yogurt; cut the fruits; crush nuts; add the rose water and saffron to the milk; mix everything and keep in the fridge min 120 min,Easy,Dessert,0.0
 02621a,cesser salad,lettuce; Parmesan cheese; Caesar dressing; Grilled chicken,20,Wash and chop the lettuce; add parmesan; Pour in the Caesar dressing; toss well; Top with grilled chicken,Easy,Dinner,0.0
-1cca8b,Pancakes,flour; egg; milk; sugar; baking powder; oil; syrup,20,mix all ingredients; Heat a lightly greased pan; pour the batter into the pan; cook until bubbles appear then flip; serve with syrup,Medium,Dessert,0.0
+1cca8b,Pancakes,flour; egg; milk; sugar; baking powder; oil; syrup,20,mix all ingredients; Heat a lightly greased pan; pour the batter into the pan; cook until bubbles appear then flip; serve with syrup,Medium,Dessert,3.5
+ec7ca2,fruit smoothie,banana; berries; milk; honey; ice,10,add all the ingredients to a blender; blend until smooth; pour into a glass,Easy,Dessert,0.0
+70e6bc,avocado toast,toast; avocado; salt; black pepper; cherry tomatoes,7,toast the bread; mash the avocado; spread it on the toast; season with salt and pepper; add tomatoes,Easy,Breakfast,3.9
+b793b8,baked salmon,salmon; potatoes; olive oil; salt; black pepper; lemon,45,slice the potatoes; place the potatoes and salmon on a pan; drizzle with olive oil; bake until fully cooked; add on top the lemon slices,Medium,Lunch,0.0
