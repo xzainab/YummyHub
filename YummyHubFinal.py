@@ -12,15 +12,13 @@ def load_recipes():
         df = pd.read_csv(FILE_NAME)
         return df, 0
     return pd.DataFrame(), 0
-    
-# Mandatory 1 - categorize recipes
+
 def recipes_categorize():
     """
-       Categorizes a given recipe into Breakfast, Lunch, Dinner, or Dessert.
-       Done by Zainab Abdulwahab
+    Categorizes a given recipe into Breakfast, Lunch, Dinner, or Dessert.
     """
-    categorize = ["breakfast", "lunch", "dinner", "dessert", "drink"]
-    print("\nCategorize options: Breakfast, Lunch, Dinner, Dessert, Drink")
+    categorize = ["breakfast", "lunch", "dinner", "dessert"]
+    print("\nCategorize options: Breakfast, Lunch, Dinner, Dessert")
     while True:
         recipe_categorize = input("Enter recipe category: ").strip().lower()
         if recipe_categorize in categorize:
@@ -28,9 +26,8 @@ def recipes_categorize():
             print(f"Success! Category set to: {validated_category}")
             return validated_category
         else:
-            print("Invalid Input! Please enter a valid category: Breakfast, Lunch, Dinner, Dessert or Drink.")
+            print("Invalid Input! Please enter a valid category: Breakfast, Lunch, Dinner, or Dessert.")
 
-# Mandatory 3 - rating recipes
 def rate_recipe():
     """
        Allow users to rate a recipe.
@@ -97,99 +94,49 @@ def sort_by_rating():
         return
 
     print(sorted_recipes_rt[["name", "rating"]].to_string(index=False))
-    
-# Mandatory 4 - shopping list
-def shopping_list():
-    """
-       Creat a shopping list depending on the selected recipes
-       Done by Kawthar Hussain
-    """
-    shopping_list = []
-    allRecipes = pd.read_csv("recipes.csv")
-
-    print("\nPlease enter each recipe below, then type 'done' when finished to print the shopping list:")
-
-    while True:
-        recipe_name = input("Enter recipe name (or type 'done') to print the shopping list: ").strip()
-
-        if recipe_name.lower() == 'done':
-            break
-
-        finding_recipe = allRecipes[allRecipes['name'] == recipe_name]
-
-        if finding_recipe.empty:
-            print(f"\n {recipe_name} not found.")
-            continue
-
-        ingredients = finding_recipe.iloc[0]['ingredients'].split(";")
-
-        for item in ingredients:
-            item = item.strip()
-
-            if item not in shopping_list:
-                shopping_list.append(item)
-
-        print("\nItems added to the shopping list.")
-
-    if len(shopping_list) == 0:
-        print("\n----- SHOPPING LIST IS EMPTY -----")
-    else:
-        print("\n========== SHOPPING LIST ==========")
-
-        for item in shopping_list:
-            print("-", item)
-
 
 def add_new_recipe():
-    """
-       Adding a new recipe into the recipe csv file
-       Done by Zainab Abdulwahab
-    """
+    """Adding a new recipe into the recipe csv file."""
     print("\n=== Add a New Recipe ===")
     recipe_id = str(uuid.uuid4())[:6]
     recipe_name = input("Enter recipe name: ").strip()
 
-    # 2. Ingredients list
     ingredients = []
     print("\nPlease enter ingredients below (separated by commas OR one by one), then type 'done' when finished:")
     while True:
         recipe_ingredient = input("Add ingredient(s): ").strip()
-        if recipe_ingredient.lower() == 'done':
+        if recipe_ingredient.lower() == "done":
             break
         if not recipe_ingredient:
             print("Input cannot be blank! Please enter an ingredient.")
             continue
         items = [item.strip() for item in recipe_ingredient.split(",") if item.strip()]
         ingredients.extend(items)
-        
+
     ingredients_str = "; ".join(ingredients)
 
-    # 3. Preparing time
     while True:
         try:
-            minutes = int(input("Enter preparation time in minutes: "))
-            prep_duration = minutes
+            prep_duration = int(input("Enter preparation time in minutes: "))
             break
         except ValueError:
             print("Invalid input! Please enter a valid number of minutes (e.g., 20).")
 
-    # 4. Cooking instructions
     instructions = []
     print("\nPlease enter cooking instructions step-by-step. Type 'done' when finished:")
     step_number = 1
     while True:
         step_input = input(f"Step {step_number}: ").strip()
-        if step_input.lower() == 'done':
+        if step_input.lower() == "done":
             break
         if not step_input:
             print("Instruction cannot be blank! Please enter a step.")
             continue
         instructions.append(step_input)
         step_number += 1
-        
+
     instructions_str = "; ".join(instructions)
 
-    # 5. Difficulty level
     valid_levels = ["easy", "medium", "hard"]
     print("\nDifficulty options: Easy, Medium, Hard")
     while True:
@@ -197,13 +144,10 @@ def add_new_recipe():
         if level in valid_levels:
             level = level.capitalize()
             break
-        else:
-            print("Invalid Input! Please enter a valid Difficulty: Easy, Medium, or Hard.")
+        print("Invalid Input! Please enter a valid Difficulty: Easy, Medium, or Hard.")
 
-    # Call the categorization function
     category_val = recipes_categorize()
 
-    # Create a new recipe dictionary
     new_recipe = {
         "id": [recipe_id],
         "name": [recipe_name],
@@ -212,12 +156,12 @@ def add_new_recipe():
         "instructions": [instructions_str],
         "difficulty level": [level],
         "category": [category_val],
-        "rating": 0
+        "rating": [None]
     }
 
     dataframe = pd.DataFrame(new_recipe)
     file_exists = os.path.exists(FILE_NAME)
-    
+
     if file_exists:
         dataframe.to_csv(FILE_NAME, mode="a", header=False, index=False)
         print(f"\nFile {FILE_NAME} has been successfully updated with {recipe_name}!")
@@ -226,69 +170,46 @@ def add_new_recipe():
         print(f"\nFile {FILE_NAME} has been successfully created with your first recipe!")
 
 def search_by_ingredients():
-    """
-    Search for recipes by a specific ingredient.
-    Done by Malak Mahdi
-    """
-    # Load the recipes dataframe
-    df = load_recipes()[0]
-    
+    """Search for recipes by a specific ingredient."""
+    df, _ = load_recipes()
+    if df.empty:
+        print("No available recipes found.")
+        return
+
     search_ingredient = input("Enter an ingredient to search recipes: ").lower().strip()
-    
-    # Filter the dataframe safely by checking if the ingredient string contains the input
-    matched_recipes = df[df['ingredients'].str.lower().str.contains(search_ingredient, na=False)]
-    
-    # Check if any matches were found
+    matched_recipes = df[df["ingredients"].str.lower().str.contains(search_ingredient, na=False)]
+
     if not matched_recipes.empty:
         print("\n=== FOUND RECIPES ===")
-        # Display specific columns cleanly without the dataframe index
-        print(matched_recipes[['name', 'preparing time', 'difficulty level']].to_string(index=False))
+        print(matched_recipes[["name", "preparing time", "difficulty level"]].to_string(index=False))
     else:
         print("\nNo available recipes found with the mentioned ingredient.")
 
+    print("\n=== ALL RECIPES ===")
+    for _, row in df.iterrows():
+        print(f"Name: {row['name']} - Preping Time: {row['preparing time']} mins - Difficulty level: {row['difficulty level']}")
 
 def view_all_recipes():
-    """
-       Display all recipes with their name and preparation time
-       Done by Kawthar Hussain
-    """
-    try:
-        allRecipes = pd.read_csv("recipes.csv")
-        size = allRecipes.shape[0]
-
-        if size == 0:
-            print("\n-----THERE IS NO RECIPES----")
-        else:
-            print("\n-----ALL RECIPES----")
-            print(allRecipes[["name", "preparing time"]])
-
-    except FileNotFoundError:
-        print("\n-----ERROR: recipes.csv FILE NOT FOUND----")
-
+    """Display all recipes with their name and preparation time."""
+    allRecipes, _ = load_recipes()
+    if allRecipes.empty:
+        print("\n-----THERE ARE NO RECIPES----")
+    else:
+        print("\n-----ALL RECIPES----")
+        print(allRecipes[["name", "preparing time"]].to_string(index=False))
 
 def random_recipe():
-    """
-       randomly select and display a complete recipe
-       Done by Kawthar Hussain
-    """
-    try:
-        allRecipes = pd.read_csv("recipes.csv")
-        size = allRecipes.shape[0]
-
-        if size == 0:
-            print("\n-----THERE IS NO RECIPES----")
-        else:
-            num = randint(0, size - 1)
-            print(allRecipes.iloc[[num]])
-
-    except FileNotFoundError:
-        print("\n-----ERROR: recipes.csv FILE NOT FOUND----")
+    """Randomly select and display a complete recipe."""
+    allRecipes, _ = load_recipes()
+    if allRecipes.empty:
+        print("\n-----THERE ARE NO RECIPES----")
+    else:
+        num = randint(0, len(allRecipes) - 1)
+        print("\n=== RANDOM RECIPE ===")
+        print(allRecipes.iloc[[num]].to_string(index=False))
 
 def display_menu():
-    """
-       Display the main menu options
-       Done by Zainab Abdulwahab
-    """
+    """Display the main menu options."""
     print("\n=== DIGITAL RECIPE BOOK ===")
     print("1. Add a new recipe")
     print("2. Search for a recipe by ingredient")
@@ -296,15 +217,11 @@ def display_menu():
     print("4. Generate a random recipe")
     print("5. Rating recipes")
     print("6. Sort by rating")
-    print("7. Generate a shopping list")
-    print("8. Exit")
-    return input("Enter your choice (1-8): ")
+    print("7. Exit")
+    return input("Enter your choice (1-7): ")
 
 def main():
-    """
-       Main application function
-       Done by Zainab Abdulwahab
-    """
+    """Main application function."""
     print("WELCOME TO THE DIGITAL RECIPE BOOK")
     print("This application helps you easily store, retrieve, and")
     print("manage your favorite cooking recipes all in one place.")
@@ -324,9 +241,9 @@ def main():
         elif choice == '6':
             sort_by_rating()
         elif choice == '7':
-            shopping_list()
-        elif choice == '8':
             print("Thank you for using DIGITAL RECIPE BOOK. Goodbye!")
             break
         else:
-            print("Invalid choice. Please enter a number between 1 and 8.") 
+            print("Invalid choice. Please enter a number between 1 and 7.") 
+if __name__ == "__main__":
+    main()

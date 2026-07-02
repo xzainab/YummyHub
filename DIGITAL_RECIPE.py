@@ -8,13 +8,14 @@ import streamlit as st
 import YummyHub
 
 FILE_NAME = YummyHub.FILE_NAME
-CATEGORIES = ["Breakfast", "Lunch", "Dinner", "Dessert"]
+CATEGORIES = ["Breakfast", "Lunch", "Dinner", "Dessert", "Drink"]
 DIFFICULTIES = ["Easy", "Medium", "Hard"]
 CATEGORY_COLOR = {
     "Breakfast": "#F4A259",
     "Lunch": "#6FB98F",
     "Dinner": "#EF6461",
     "Dessert": "#A288E3",
+    "Drink": "#5AA9E6",
 }
 
 st.set_page_config(page_title="Recipe Dashboard", page_icon="🍽️", layout="wide")
@@ -106,12 +107,18 @@ PAGES = {
     "📖 View All Recipes": "View All Recipes",
     "🎲 Random Recipe": "Random Recipe",
     "⭐ Rate Recipe": "Rate Recipe",
+    "🏆 Sort by Rating": "Sort by Rating",
     "🛒 Shopping List": "Shopping List",
 }
 choice = st.sidebar.radio("Navigate", list(PAGES.keys()), label_visibility="collapsed")
 page = PAGES[choice]
 
-df, size = YummyHub.load_recipes()
+# NOTE: YummyHub.load_recipes() always returns 0 for its size value, so we
+# compute the real size ourselves from the dataframe instead of trusting it.
+df, _ = YummyHub.load_recipes()
+size = len(df)
+if size:
+    df["rating"] = pd.to_numeric(df["rating"], errors="coerce").fillna(0.0)
 
 
 def recipe_card(r, show_rating=False):
@@ -267,15 +274,36 @@ elif page == "Rate Recipe":
     if size == 0:
         st.info("No recipes yet.")
     else:
-        recipe_name = st.selectbox("Select a recipe", df["name"].tolist())
-        new_rating = st.slider("Your rating", min_value=1.0, max_value=5.0, step=0.5, value=3.0)
-        if st.button("Submit Rating"):
-            idx = df[df["name"] == recipe_name].index[0]
-            old_rating = float(df.at[idx, "rating"])
-            final_rating = round((old_rating + new_rating) / 2.0, 1) if old_rating > 0.0 else round(new_rating, 1)
-            df.at[idx, "rating"] = final_rating
-            df.to_csv(FILE_NAME, index=False)
-            st.success(f"'{recipe_name}' is now rated {final_rating}/5 stars.")
+        search_text = st.text_input("Search for a recipe to rate")
+        matches = df[df["name"].str.lower().str.contains(search_text.lower(), na=False)] if search_text else df
+
+        if matches.empty:
+            st.warning("No recipes match that search.")
+        else:
+            recipe_name = st.selectbox("Select a recipe", matches["name"].tolist())
+            new_rating = st.slider("Your rating", min_value=1.0, max_value=5.0, step=0.5, value=3.0)
+            if st.button("Submit Rating"):
+                idx = df[df["name"] == recipe_name].index[0]
+                old_rating = float(df.at[idx, "rating"])
+                final_rating = round((old_rating + new_rating) / 2.0, 1) if old_rating > 0.0 else round(new_rating, 1)
+                df.at[idx, "rating"] = final_rating
+                df.to_csv(FILE_NAME, index=False)
+                st.success(f"'{recipe_name}' is now rated {final_rating}/5 stars.")
+
+# ---------------------------------------------------------------------------
+# Sort by Rating
+# ---------------------------------------------------------------------------
+elif page == "Sort by Rating":
+    st.subheader("Top rated recipes")
+    if size == 0:
+        st.info("No recipes yet.")
+    else:
+        rated = df[df["rating"] > 0].sort_values(by="rating", ascending=False)
+        if rated.empty:
+            st.info("No rated recipes yet — rate a few from the sidebar.")
+        else:
+            for _, r in rated.iterrows():
+                recipe_card(r, show_rating=True)
 
 # ---------------------------------------------------------------------------
 # Shopping List
