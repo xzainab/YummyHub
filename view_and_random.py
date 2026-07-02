@@ -9,7 +9,7 @@ def view_all_recipes():
         print('\n-----THERE IS NO RECIPES----')
     else:
         print('\n-----ALL RECIPES----')
-        print(allRecipes[['name', 'preparing time']])
+        allRecipes[['name', 'preparing time']]
         
 
 def random_recipe ():
@@ -18,4 +18,4 @@ def random_recipe ():
         print('\n-----THERE IS NO RECIPES----')
     else: 
         num=randint(0,size-1)
-        print(allRecipes.iloc[num])
+        allRecipes.iloc[[num]]
