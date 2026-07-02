@@ -1,2 +1,2 @@
-# YummyHub
+# YummyHub - Group 3
 
