@@ -41,18 +41,18 @@ def rate_recipe():
         print("No recipes available to rate!")
         return
 
-    recipe_to_rate = input("Enter a recipe you'd like to rate: ").strip().lower()
+    recipe_to_rate = input("Enter recipe name: ").strip().lower()
     output = recipes[recipes["name"].str.lower().str.contains(recipe_to_rate, na=False, regex=False)]
 
     if output.empty:
-        print("Recipe not found! Please input another recipe to rate.")
+        print("Recipe not found!")
         return
 
     if len(output) > 1:
         print("Multiple recipes matched.")
-        print(output[["name"]].to_string(index=False))
-        recipe_choice = input("Type the exact recipe name you want to rate: ").strip().lower()
-        output = output[output["name"].str.lower() == recipe_choice]
+        print(output[["id", "name", "ingredients", "preparing time", "rating"]].to_string(index=False))
+        recipe_choice = input("Type the exact recipe ID you want to rate: ").strip()
+        output = output[output["id"] == recipe_choice]
 
         if output.empty:
             print("Exact recipe not found.")
@@ -70,14 +70,16 @@ def rate_recipe():
     index = output.index[0]
     old_rating = recipes.loc[index, "rating"]
 
+
     if pd.notna(old_rating):
         recipes.loc[index, "rating"] = round((float(old_rating) + new_rating) / 2, 1)
-        print(f"An existing rating has been found! The new average rating is {recipes.loc[index, 'rating']}/5.")
+        print(f"Updated rating: {recipes.loc[index, 'rating']}/5.")
     else:
         recipes.loc[index, "rating"] = round(new_rating, 1)
-        print(f"First rating has been recorded! The rating is {recipes.loc[index, 'rating']}/5.")
+        print(f"First rating recorded: {recipes.loc[index, 'rating']}/5.")
 
     recipes.to_csv(FILE_NAME, index=False)
+
 
 def sort_by_rating():
     """
@@ -139,7 +141,7 @@ def shopping_list():
         for item in shopping_list:
             print("-", item)
 
-
+df2 = pd.read_csv("recipes.csv")
 def add_new_recipe():
     """
        Adding a new recipe into the recipe csv file
@@ -147,7 +149,15 @@ def add_new_recipe():
     """
     print("\n=== Add a New Recipe ===")
     recipe_id = str(uuid.uuid4())[:6]
-    recipe_name = input("Enter recipe name: ").strip()
+
+    while True:
+       recipe_name = input("Enter recipe name: ").strip()
+    
+       if recipe_name in df2['name'].values:
+          print(f'{recipe_name} already exists, please add another recipe')
+          continue 
+       break
+
 
     # 2. Ingredients list
     ingredients = []
@@ -212,7 +222,7 @@ def add_new_recipe():
         "instructions": [instructions_str],
         "difficulty level": [level],
         "category": [category_val],
-        "rating": 0
+        "rating": None
     }
 
     dataframe = pd.DataFrame(new_recipe)

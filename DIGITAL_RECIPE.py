@@ -185,6 +185,8 @@ elif page == "Add Recipe":
     if submitted:
         if not name.strip():
             st.error("Please enter a recipe name.")
+        elif size and name.strip() in df["name"].values:
+            st.error(f"'{name.strip()}' already exists. Please choose a different name.")
         elif not ingredients_raw.strip():
             st.error("Please enter at least one ingredient.")
         elif not instructions_raw.strip():
@@ -206,7 +208,7 @@ elif page == "Add Recipe":
                 "instructions": ["; ".join(instructions)],
                 "difficulty level": [difficulty],
                 "category": [category],
-                "rating": [0.0],
+                "rating": [None],
             }
             new_df = pd.DataFrame(new_recipe)
             file_exists = os.path.exists(FILE_NAME)
@@ -274,21 +276,15 @@ elif page == "Rate Recipe":
     if size == 0:
         st.info("No recipes yet.")
     else:
-        search_text = st.text_input("Search for a recipe to rate")
-        matches = df[df["name"].str.lower().str.contains(search_text.lower(), na=False)] if search_text else df
-
-        if matches.empty:
-            st.warning("No recipes match that search.")
-        else:
-            recipe_name = st.selectbox("Select a recipe", matches["name"].tolist())
-            new_rating = st.slider("Your rating", min_value=1.0, max_value=5.0, step=0.5, value=3.0)
-            if st.button("Submit Rating"):
-                idx = df[df["name"] == recipe_name].index[0]
-                old_rating = float(df.at[idx, "rating"])
-                final_rating = round((old_rating + new_rating) / 2.0, 1) if old_rating > 0.0 else round(new_rating, 1)
-                df.at[idx, "rating"] = final_rating
-                df.to_csv(FILE_NAME, index=False)
-                st.success(f"'{recipe_name}' is now rated {final_rating}/5 stars.")
+        recipe_name = st.selectbox("Select a recipe", df["name"].tolist())
+        new_rating = st.slider("Your rating", min_value=1.0, max_value=5.0, step=0.5, value=3.0)
+        if st.button("Submit Rating"):
+            idx = df[df["name"] == recipe_name].index[0]
+            old_rating = float(df.at[idx, "rating"])
+            final_rating = round((old_rating + new_rating) / 2.0, 1) if old_rating > 0.0 else round(new_rating, 1)
+            df.at[idx, "rating"] = final_rating
+            df.to_csv(FILE_NAME, index=False)
+            st.success(f"'{recipe_name}' is now rated {final_rating}/5 stars.")
 
 # ---------------------------------------------------------------------------
 # Sort by Rating
